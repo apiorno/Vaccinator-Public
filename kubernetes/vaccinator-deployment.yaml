@@ -1,0 +1,44 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    kompose.cmd: kompose convert
+    kompose.service.type: LoadBalancer
+    kompose.version: 1.22.0 (955b78124)
+  creationTimestamp: null
+  labels:
+    io.kompose.service: vaccinator
+  name: vaccinator
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      io.kompose.service: vaccinator
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      annotations:
+        kompose.cmd: kompose convert
+        kompose.service.type: LoadBalancer
+        kompose.version: 1.22.0 (955b78124)
+      creationTimestamp: null
+      labels:
+        io.kompose.network/vaccinator: "true"
+        io.kompose.service: vaccinator
+    spec:
+      containers:
+        - image: solidbox/vaccinator:v1.2
+          name: vaccinator
+          ports:
+            - containerPort: 8080
+          resources: {}
+          volumeMounts:
+            - mountPath: /usr/src/app/
+              name: api
+      restartPolicy: Always
+      volumes:
+        - name: api
+          persistentVolumeClaim:
+            claimName: api
+status: {}
